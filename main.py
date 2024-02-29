@@ -2,6 +2,29 @@ import bluetooth
 import time
 import sys
 
+def scan_and_choose_device():
+    print("Scanning for available Bluetooth devices...")
+    nearby_devices = bluetooth.discover_devices(lookup_names=True)
+
+    if not nearby_devices:
+        print("No Bluetooth devices found.")
+        return None
+
+    print("Available Bluetooth devices:")
+    for i, (addr, name) in enumerate(nearby_devices):
+        print(f"{i+1}. {name} ({addr})")
+
+    try:
+        choice = int(input("Enter the number corresponding to the target device: "))
+        if choice < 1 or choice > len(nearby_devices):
+            print("Invalid choice. Please select a valid number.")
+            return None
+        else:
+            return nearby_devices[choice - 1][0]  # Return the device address
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        return None
+
 def jam_bluetooth(device_address):
     try:
         service_matches = bluetooth.find_service(address=device_address)
@@ -26,9 +49,6 @@ def jam_bluetooth(device_address):
         print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python bluetooth_jammer.py <device_address>")
-        sys.exit(1)
-
-    device_address = sys.argv[1]
-    jam_bluetooth(device_address)
+    device_address = scan_and_choose_device()
+    if device_address:
+        jam_bluetooth(device_address)
