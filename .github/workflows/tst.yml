@@ -1,0 +1,26 @@
+name: Setup Linux Ubuntu VPS with ngrok
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download ngrok
+        run: wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz -O ngrok.zip
+
+      - name: Extract ngrok
+        run: tar -xvf ngrok.zip
+
+      - name: Auth ngrok
+        run: ./ngrok authtoken $NGROK_AUTH_TOKEN
+        env:
+          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+
+      - name: Create Tunnel
+        run: ./ngrok tcp 22  # Replace 22 with the port you want to expose for SSH access
