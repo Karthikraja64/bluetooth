@@ -1,0 +1,23 @@
+name: ngrok Tunnel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  connect:
+    runs-on: windows-latest
+    steps:
+      - name: Install ngrok
+        run: |
+          Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
+          Expand-Archive ngrok.zip
+          del ngrok.zip
+          Set-Location -Path $env:ProgramFiles\ngrok
+
+      - name: Start ngrok Tunnel
+        run: |
+          .\ngrok.exe authtoken $env:NGROK_AUTH_TOKEN
+          .\ngrok.exe tcp --region=in 3389
+￼Enter
